@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>RSVP Admin Dashboard | Engagement</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
+
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --gold-dark: #B8962E;
+            --burgundy: #800020;
+            --cream: #FDF8F3;
+            --text-dark: #2C1810;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 2px solid var(--gold);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--gold);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            padding: 20px 40px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--gold);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-top: 5px;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        }
+
+        .rsvp-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .rsvp-table th,
+        .rsvp-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .rsvp-table th {
+            background: rgba(212, 175, 55, 0.2);
+            color: var(--gold);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .rsvp-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .status-yes {
+            color: #4CAF50;
+            font-weight: 600;
+        }
+
+        .status-no {
+            color: #f44336;
+            font-weight: 600;
+        }
+
+        .status-maybe {
+            color: #FF9800;
+            font-weight: 600;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: var(--gold);
+        }
+
+        .loading::before {
+            content: '⏳';
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 20px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.6;
+                transform: scale(0.95);
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #888;
+        }
+
+        .empty-state::before {
+            content: '📭';
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: var(--gold);
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: opacity 0.3s;
+        }
+
+        .back-link:hover {
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            .rsvp-table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .stat-card {
+                padding: 15px 25px;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Invitation</a>
+
+        <header>
+            <h1>📋 RSVP Dashboard</h1>
+            <p>View all engagement ceremony RSVPs</p>
+        </header>
+
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalCount">-</div>
+                <div class="stat-label">Total RSVPs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="yesCount">-</div>
+                <div class="stat-label">Attending</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="noCount">-</div>
+                <div class="stat-label">Declined</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="maybeCount">-</div>
+                <div class="stat-label">Maybe</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="guestCount">-</div>
+                <div class="stat-label">Total Guests</div>
+            </div>
+        </div>
+
+        <button class="refresh-btn" onclick="loadRSVPs()">🔄 Refresh Data</button>
+
+        <div id="tableContainer">
+            <div class="loading">Loading RSVPs...</div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="firebase.js"></script>
+
+    <script>
+        // Load and display RSVPs
+        function loadRSVPs() {
+            const tableContainer = document.getElementById('tableContainer');
+            tableContainer.innerHTML = '<div class="loading">Loading RSVPs...</div>';
+
+            getAllRSVPs()
+                .then((rsvps) => {
+                    displayStats(rsvps);
+                    displayTable(rsvps);
+                })
+                .catch((error) => {
+                    console.error('Error loading RSVPs:', error);
+                    tableContainer.innerHTML = '<div class="empty-state">Error loading RSVPs. Please try again.</div>';
+                });
+        }
+
+        // Display statistics
+        function displayStats(rsvps) {
+            const total = rsvps.length;
+            const attending = rsvps.filter(r => r.attendance && r.attendance.toLowerCase().includes('yes')).length;
+            const declined = rsvps.filter(r => r.attendance && r.attendance.toLowerCase().includes('no')).length;
+            const maybe = rsvps.filter(r => r.attendance && r.attendance.toLowerCase().includes('maybe')).length;
+
+            // Calculate total guests
+            let totalGuests = 0;
+            rsvps.forEach(r => {
+                if (r.attendance && r.attendance.toLowerCase().includes('yes')) {
+                    const guestNum = parseInt(r.guests) || 1;
+                    totalGuests += guestNum;
+                }
+            });
+
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('yesCount').textContent = attending;
+            document.getElementById('noCount').textContent = declined;
+            document.getElementById('maybeCount').textContent = maybe;
+            document.getElementById('guestCount').textContent = totalGuests;
+        }
+
+        // Display table
+        function displayTable(rsvps) {
+            const tableContainer = document.getElementById('tableContainer');
+
+            if (rsvps.length === 0) {
+                tableContainer.innerHTML = '<div class="empty-state">No RSVPs yet. Share your invitation!</div>';
+                return;
+            }
+
+            // Sort by submission date (newest first)
+            rsvps.sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+
+            let html = `
+        <table class="rsvp-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Guests</th>
+              <th>Attending</th>
+              <th>Dietary</th>
+              <th>Message</th>
+              <th>Submitted</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+            rsvps.forEach((rsvp, index) => {
+                const statusClass = rsvp.attendance?.toLowerCase().includes('yes') ? 'status-yes' :
+                    rsvp.attendance?.toLowerCase().includes('no') ? 'status-no' : 'status-maybe';
+
+                const date = rsvp.submittedAt ? new Date(rsvp.submittedAt).toLocaleDateString() : '-';
+
+                html += `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${escapeHtml(rsvp.name || '-')}</td>
+            <td>${escapeHtml(rsvp.email || '-')}</td>
+            <td>${escapeHtml(rsvp.phone || '-')}</td>
+            <td>${escapeHtml(rsvp.guests || '1')}</td>
+            <td class="${statusClass}">${escapeHtml(rsvp.attendance || '-')}</td>
+            <td>${escapeHtml(rsvp.dietary || '-')}</td>
+            <td>${escapeHtml(rsvp.message || '-')}</td>
+            <td>${date}</td>
+          </tr>
+        `;
+            });
+
+            html += '</tbody></table>';
+            tableContainer.innerHTML = html;
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Load on page ready
+        document.addEventListener('DOMContentLoaded', loadRSVPs);
+    </script>
+</body>
+
+</html>

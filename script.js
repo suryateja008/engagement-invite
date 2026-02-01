@@ -339,7 +339,7 @@ function handleRSVPSubmit(event) {
     });
 
     // Check if attendance is selected
-    const attendance = formData.get('attendance');
+    const attendance = formData.get('entry.726782799');
     if (!attendance) {
         isValid = false;
         const attendanceContainer = document.querySelector('.attendance-options');
@@ -367,66 +367,162 @@ function handleRSVPSubmit(event) {
     submitBtn.innerHTML = '<span class="loading-spinner">✨</span> Sending...';
     submitBtn.disabled = true;
 
-    // Send data to Formspree using AJAX
-    fetch(form.action, {
-        method: form.method,
-        body: formData,
-        headers: {
-            'Accept': 'application/json'
-        }
-    }).then(response => {
-        if (response.ok) {
-            // Success! Show success message
-            form.style.display = 'none';
-            const successMessage = document.querySelector('.success-message');
-            successMessage.classList.add('visible');
-
-            // Play particles effect
-            if (typeof createParticles === 'function') {
-                const rect = successMessage.getBoundingClientRect();
-                createParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
-            }
-        } else {
-            // Error from Formspree
-            response.json().then(data => {
-                if (Object.hasOwn(data, 'errors')) {
-                    alert(data["errors"].map(error => error["message"]).join(", "));
-                } else {
-                    alert("Oops! There was a problem submitting your form");
-                }
-            });
-            // Reset button
-            submitBtn.innerHTML = originalBtnText;
-            submitBtn.disabled = false;
-        }
-    }).catch(error => {
-        // Network error
-        alert("Oops! There was a problem submitting your form");
-        submitBtn.innerHTML = originalBtnText;
-        submitBtn.disabled = false;
-    });
-
-    // Collect RSVP data (for local storage demo, can be removed if only using Formspree)
+    // Collect RSVP data for Firebase
     const rsvpData = {
-        id: Date.now(),
-        guestName: formData.get('guestName'),
-        email: formData.get('email'),
-        phone: formData.get('phone'),
-        attendance: formData.get('attendance'),
-        guestCount: parseInt(formData.get('guestCount')) || 1,
-        dietary: formData.get('dietary'),
-        message: formData.get('message'),
-        submittedAt: new Date().toISOString()
+        name: formData.get('entry.1434795407') || '',
+        email: formData.get('entry.1508246001') || '',
+        phone: formData.get('entry.595884956') || '',
+        guests: formData.get('entry.225049971') || '1',
+        attendance: formData.get('entry.726782799') || '',
+        dietary: formData.get('entry.1063341950') || '',
+        message: formData.get('entry.1034171781') || ''
     };
 
-    // Save to localStorage (for demo purposes)
-    saveRSVP(rsvpData);
+    // Submit to Firebase
+    submitRSVPToFirebase(rsvpData)
+        .then(() => {
+            // Hide form
+            form.style.display = 'none';
 
-    // Show success message
-    showSuccessMessage();
+            // Get the success message element
+            const successMessage = document.getElementById('successMessage');
 
-    // Hide form
-    form.style.display = 'none';
+            // Customize message and animation based on attendance
+            const attendance = rsvpData.attendance.toLowerCase();
+
+            if (attendance.includes('yes')) {
+                // They're coming! Celebration confetti blast! 🎉
+                successMessage.querySelector('.success-icon').textContent = '🎉';
+                successMessage.querySelector('h3').textContent = 'We Can\'t Wait to See You!';
+                successMessage.querySelector('p').textContent = 'Thank you for confirming! Get ready to celebrate with us!';
+                playCelebrationEffect('confetti');
+            } else if (attendance.includes('maybe')) {
+                // Maybe - hopeful hearts animation 💭
+                successMessage.querySelector('.success-icon').textContent = '💭';
+                successMessage.querySelector('h3').textContent = 'We Hope to See You!';
+                successMessage.querySelector('p').textContent = 'We understand you\'re not sure yet. We hope you can make it!';
+                playCelebrationEffect('hearts');
+            } else {
+                // Can't make it - gentle thank you sparkles ✨
+                successMessage.querySelector('.success-icon').textContent = '💝';
+                successMessage.querySelector('h3').textContent = 'Thank You for Letting Us Know';
+                successMessage.querySelector('p').textContent = 'We\'ll miss you! Your warm wishes mean the world to us.';
+                playCelebrationEffect('sparkles');
+            }
+
+            // Show the success message
+            if (successMessage) {
+                successMessage.classList.add('visible');
+            }
+        })
+        .catch((error) => {
+            console.error('Error submitting RSVP:', error);
+            alert('Sorry, there was an error submitting your RSVP. Please try again.');
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+        });
+}
+
+// ═══════════════════════════════════════
+// CELEBRATION EFFECTS
+// ═══════════════════════════════════════
+function playCelebrationEffect(type) {
+    const container = document.createElement('div');
+    container.id = 'celebrationEffect';
+    container.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 9999;
+        overflow: hidden;
+    `;
+    document.body.appendChild(container);
+
+    let emojis, colors, particleCount;
+
+    if (type === 'confetti') {
+        // Confetti blast for "Yes" responses 🎉
+        emojis = ['🎉', '✨', '💐', '🌸', '🌺', '💫', '🌹', '🎊', '💝', '🌷', '🎊', '🥳'];
+        colors = ['#D4AF37', '#FFD700', '#FF69B4', '#FF1493', '#9370DB', '#87CEEB', '#98FB98'];
+        particleCount = 100;
+    } else if (type === 'hearts') {
+        // Hearts for "Maybe" responses 💭
+        emojis = ['💭', '💫', '✨', '🤍', '💛', '🌟'];
+        colors = ['#FFB6C1', '#DDA0DD', '#E6E6FA', '#FFDAB9'];
+        particleCount = 50;
+    } else {
+        // Gentle sparkles for "No" responses ✨
+        emojis = ['✨', '💫', '🌟', '💝', '🤍'];
+        colors = ['#D4AF37', '#C0C0C0', '#FFE4B5', '#FAFAD2'];
+        particleCount = 40;
+    }
+
+    // Create particles
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        const isEmoji = Math.random() > 0.4;
+
+        if (isEmoji) {
+            particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            particle.style.fontSize = (Math.random() * 25 + 15) + 'px';
+        } else {
+            const size = Math.random() * 12 + 6;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            particle.style.borderRadius = Math.random() > 0.3 ? '50%' : '2px';
+        }
+
+        const startX = Math.random() * 100;
+        const delay = Math.random() * 2;
+        const duration = 3 + Math.random() * 3;
+        const drift = (Math.random() - 0.5) * 200;
+
+        particle.style.cssText += `
+            position: absolute;
+            left: ${startX}%;
+            top: -60px;
+            opacity: 1;
+            transform-origin: center;
+            animation: celebrateFall${type} ${duration}s ease-out forwards;
+            animation-delay: ${delay}s;
+            --drift: ${drift}px;
+        `;
+
+        container.appendChild(particle);
+    }
+
+    // Add animation keyframes
+    const styleSheet = document.createElement('style');
+    styleSheet.textContent = `
+        @keyframes celebrateFall${type} {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg) scale(1);
+                opacity: 1;
+            }
+            25% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) translateX(var(--drift)) rotate(720deg) scale(0.3);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(styleSheet);
+
+    // Remove after 6 seconds
+    setTimeout(() => {
+        container.style.transition = 'opacity 1s ease-out';
+        container.style.opacity = '0';
+        setTimeout(() => {
+            container.remove();
+            styleSheet.remove();
+        }, 1000);
+    }, 5000);
 }
 
 function saveRSVP(data) {

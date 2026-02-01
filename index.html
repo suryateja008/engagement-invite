@@ -130,16 +130,16 @@
           <!-- Map Container - Temporarily removed for faster loading, can be added back later -->
 
           <div class="venue-links">
-            <a href="https://www.google.com/maps/search/?api=1&query=37.68107,-121.74166" target="_blank"
-              rel="noopener noreferrer" class="map-link-btn">
+            <a href="https://maps.app.goo.gl/11BuRvfSseLYdZ888" target="_blank" rel="noopener noreferrer"
+              class="map-link-btn">
               🚪 Venue Entrance
             </a>
-            <a href="https://www.google.com/maps/search/?api=1&query=4444+East+Ave,+Livermore,+CA+94550" target="_blank"
-              rel="noopener noreferrer" class="map-link-btn">
+            <a href="https://maps.app.goo.gl/qtETzAFZyPWYSTtp7" target="_blank" rel="noopener noreferrer"
+              class="map-link-btn">
               📍 Get Directions
             </a>
-            <a href="https://www.google.com/maps/search/?api=1&query=37.6817,-121.7402" target="_blank"
-              rel="noopener noreferrer" class="map-link-btn map-link-secondary">
+            <a href="https://maps.app.goo.gl/LnULTUfHDcvRy1ma8" target="_blank" rel="noopener noreferrer"
+              class="map-link-btn map-link-secondary">
               🅿️ Extra Parking
             </a>
           </div>
@@ -166,26 +166,26 @@
           <span class="rsvp-deadline">Please respond by February 28, 2026</span>
         </div>
 
-        <form id="rsvpForm" class="rsvp-form" action="https://formspree.io/f/mlgldnko" method="POST">
+        <form id="rsvpForm" class="rsvp-form">
           <div class="form-row">
             <div class="form-group">
-              <label for="name">Full Name</label>
-              <input type="text" id="name" name="name" required placeholder="Guest Name(s)">
+              <label for="name">Full Name <span class="required">*</span></label>
+              <input type="text" id="name" name="entry.1434795407" required placeholder="Guest Name(s)">
             </div>
             <div class="form-group">
-              <label for="email">Email Address</label>
-              <input type="email" id="email" name="email" required placeholder="your@email.com">
+              <label for="email">Email Address <span class="required">*</span></label>
+              <input type="email" id="email" name="entry.1508246001" required placeholder="your@email.com">
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-group">
-              <label for="phone">Phone Number</label>
-              <input type="tel" id="phone" name="phone" required placeholder="(123) 456-7890">
+              <label for="phone">Phone Number <span class="required">*</span></label>
+              <input type="tel" id="phone" name="entry.595884956" required placeholder="(123) 456-7890">
             </div>
             <div class="form-group">
               <label for="guests">Number of Guests</label>
-              <select id="guests" name="guests">
+              <select id="guests" name="entry.225049971">
                 <option value="1">1 Guest</option>
                 <option value="2">2 Guests</option>
                 <option value="3">3 Guests</option>
@@ -200,21 +200,21 @@
             <label>Will you be attending? <span class="required">*</span></label>
             <div class="attendance-options">
               <div class="attendance-option">
-                <input type="radio" id="attending-yes" name="attendance" value="yes" required>
+                <input type="radio" id="attending-yes" name="entry.726782799" value="Yes, I will attend" required>
                 <label for="attending-yes">
                   <span class="option-icon">🎉</span>
                   <span class="option-text">Joyfully Accept</span>
                 </label>
               </div>
               <div class="attendance-option">
-                <input type="radio" id="attending-no" name="attendance" value="no">
+                <input type="radio" id="attending-no" name="entry.726782799" value="No, I cannot attend">
                 <label for="attending-no">
                   <span class="option-icon">😔</span>
                   <span class="option-text">Regretfully Decline</span>
                 </label>
               </div>
               <div class="attendance-option">
-                <input type="radio" id="attending-maybe" name="attendance" value="maybe">
+                <input type="radio" id="attending-maybe" name="entry.726782799" value="Maybe">
                 <label for="attending-maybe">
                   <span class="option-icon">🤔</span>
                   <span class="option-text">Maybe</span>
@@ -226,12 +226,12 @@
           <!-- Additional Information -->
           <div class="form-group">
             <label for="dietary">Dietary Restrictions (if any)</label>
-            <input type="text" id="dietary" name="dietary" placeholder="e.g., Vegetarian, Vegan, Allergies...">
+            <input type="text" id="dietary" name="entry.1063341950" placeholder="e.g., Vegetarian, Vegan, Allergies...">
           </div>
 
           <div class="form-group">
-            <label for="message">Message / Wishes for the Couple</label>
-            <textarea id="message" name="message" placeholder="Share your blessings and wishes..."></textarea>
+            <label for="message">Message to the Couple (Optional)</label>
+            <textarea id="message" name="entry.1034171781" placeholder="Share your blessings and wishes..."></textarea>
           </div>
 
           <button type="submit" class="submit-btn">
@@ -240,7 +240,7 @@
         </form>
 
         <!-- Success Message -->
-        <div class="success-message">
+        <div class="success-message" id="successMessage">
           <div class="success-icon">💝</div>
           <h3>Thank You!</h3>
           <p>Your RSVP has been received. We look forward to celebrating with you!</p>
@@ -266,6 +266,11 @@
       <span class="ornament-line"></span>
     </div>
   </footer>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <script src="firebase.js"></script>
 
   <!-- Scripts -->
   <script src="config.js"></script>
