@@ -12,7 +12,51 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeMagicCursor();
     initializeTextAnimations();
     initializeScrollIndicator();
+    initializeAccessControl();
 });
+
+// ═══════════════════════════════════════
+// ACCESS CONTROL (PRIVACY)
+// ═══════════════════════════════════════
+function initializeAccessControl() {
+    const overlay = document.getElementById('accessOverlay');
+    const accessInput = document.getElementById('accessCode');
+    const accessBtn = document.getElementById('accessBtn');
+    const errorMsg = document.getElementById('accessError');
+    const CORRECT_CODE = 'LOVE2026'; // Simple client-side code
+
+    // Check if already accessed
+    if (localStorage.getItem('invitationAccess') === 'granted') {
+        overlay.classList.add('hidden');
+        return;
+    }
+
+    function checkCode() {
+        const code = accessInput.value.trim().toUpperCase();
+        if (code === CORRECT_CODE) {
+            localStorage.setItem('invitationAccess', 'granted');
+            overlay.classList.add('hidden');
+        } else {
+            errorMsg.classList.remove('hidden');
+            accessInput.style.borderColor = '#e74c3c';
+            accessInput.value = '';
+            setTimeout(() => {
+                errorMsg.classList.add('hidden');
+                accessInput.style.borderColor = '';
+            }, 3000);
+        }
+    }
+
+    if (accessBtn) {
+        accessBtn.addEventListener('click', checkCode);
+    }
+
+    if (accessInput) {
+        accessInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkCode();
+        });
+    }
+}
 
 // ═══════════════════════════════════════
 // PAGE INITIALIZATION

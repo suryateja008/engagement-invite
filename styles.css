@@ -1632,4 +1632,83 @@ h3 {
     box-shadow: none;
     border: 1px solid #ccc;
   }
+}/* ═══════════════════════════════════════
+   ACCESS OVERLAY (PRIVACY)
+   ═══════════════════════════════════════ */
+.access-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(253, 245, 240, 1) 0%, rgba(255, 248, 245, 1) 100%);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+.access-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.access-card {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(183, 110, 121, 0.2);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    border: 1px solid rgba(183, 110, 121, 0.2);
+    animation: fadeInUp 1s ease-out;
+}
+
+.access-card h2 {
+    font-family: var(--font-display);
+    color: var(--burgundy);
+    font-size: 2rem;
+    margin: 15px 0;
+}
+
+.access-card p {
+    font-family: var(--font-body);
+    color: var(--text-dark);
+    margin-bottom: 25px;
+}
+
+.access-form {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.access-form input {
+    padding: 12px 15px;
+    border: 1px solid rgba(183, 110, 121, 0.3);
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.access-form input:focus {
+    border-color: #B76E79;
+    box-shadow: 0 0 10px rgba(183, 110, 121, 0.1);
+}
+
+.error-msg {
+    color: #e74c3c;
+    font-size: 0.9rem;
+    margin-top: 15px;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.error-msg.hidden {
+    opacity: 0;
 }
