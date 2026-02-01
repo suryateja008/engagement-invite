@@ -172,11 +172,7 @@ function populateEventDetails() {
         rsvpDeadline.textContent = `Please respond by ${EVENT_CONFIG.rsvpDeadline}`;
     }
 
-    // Set map link
-    const mapLink = document.querySelector('.map-link-btn');
-    if (mapLink && EVENT_CONFIG.mapLink) {
-        mapLink.href = EVENT_CONFIG.mapLink;
-    }
+    // Map links are now hardcoded in HTML to support different link types (Apple Maps, Google Maps, etc.)
 
     // Set map embed if provided
     const mapIframe = document.querySelector('.map-container iframe');
