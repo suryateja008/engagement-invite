@@ -1247,6 +1247,25 @@ h3 {
   animation: shimmer 1s ease;
 }
 
+/* Venue links container */
+.venue-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.map-link-secondary {
+  background: linear-gradient(135deg, #4A5568 0%, #2D3748 100%);
+  box-shadow: 0 6px 20px rgba(74, 85, 104, 0.3);
+}
+
+.map-link-secondary:hover {
+  background: linear-gradient(135deg, #2D3748 0%, #4A5568 100%);
+  box-shadow: 0 12px 40px rgba(74, 85, 104, 0.5);
+}
+
 /* ═══════════════════════════════════════
    RSVP SECTION
    ═══════════════════════════════════════ */
