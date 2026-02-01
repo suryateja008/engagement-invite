@@ -4,6 +4,8 @@
 
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize the page
+    initializePersonalizedInvite();
+    initializeCelebrationEffect();
     initializePage();
     initializeScrollAnimations();
     initializeRSVPForm();
@@ -12,6 +14,104 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeMagicCursor();
     initializeScrollIndicator();
 });
+
+// ═══════════════════════════════════════
+// PERSONALIZED INVITATION (URL BASED)
+// ═══════════════════════════════════════
+function initializePersonalizedInvite() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const inviteType = urlParams.get('invite');
+    const invitationImage = document.getElementById('invitationImage');
+
+    if (invitationImage && inviteType) {
+        if (inviteType.toLowerCase() === 'nitya') {
+            invitationImage.src = 'invitation-nitya.jpg';
+            invitationImage.alt = 'Engagement Invitation - Nityasri Lakshmi Gopinath & Surya Teja Duggi';
+        }
+        // 'surya' or default uses the original invitation.jpg
+    }
+}
+
+// ═══════════════════════════════════════
+// CELEBRATION EFFECT (CONFETTI & FLOWERS)
+// ═══════════════════════════════════════
+function initializeCelebrationEffect() {
+    const celebrationContainer = document.createElement('div');
+    celebrationContainer.id = 'celebrationContainer';
+    celebrationContainer.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 9999;
+        overflow: hidden;
+    `;
+    document.body.appendChild(celebrationContainer);
+
+    // Create confetti and flower particles
+    const particles = [];
+    const emojis = ['🎉', '✨', '💐', '🌸', '🌺', '💫', '🌹', '🎊', '💝', '🌷'];
+    const colors = ['#D4AF37', '#FFD700', '#FF69B4', '#FF1493', '#9370DB', '#87CEEB'];
+
+    // Create 80 particles
+    for (let i = 0; i < 80; i++) {
+        const particle = document.createElement('div');
+        const isEmoji = Math.random() > 0.5;
+
+        if (isEmoji) {
+            particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            particle.style.fontSize = (Math.random() * 20 + 15) + 'px';
+        } else {
+            particle.style.width = (Math.random() * 10 + 5) + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            particle.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        }
+
+        particle.style.cssText += `
+            position: absolute;
+            left: ${Math.random() * 100}%;
+            top: -50px;
+            opacity: 1;
+            animation: celebrationFall ${3 + Math.random() * 3}s ease-out forwards;
+            animation-delay: ${Math.random() * 2}s;
+        `;
+
+        celebrationContainer.appendChild(particle);
+        particles.push(particle);
+    }
+
+    // Add animation keyframes
+    const styleSheet = document.createElement('style');
+    styleSheet.textContent = `
+        @keyframes celebrationFall {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(1);
+                opacity: 1;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(${Math.random() > 0.5 ? '' : '-'}720deg) scale(0.5);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(styleSheet);
+
+    // Remove celebration after 5 seconds
+    setTimeout(() => {
+        celebrationContainer.style.transition = 'opacity 1s ease-out';
+        celebrationContainer.style.opacity = '0';
+        setTimeout(() => {
+            celebrationContainer.remove();
+            styleSheet.remove();
+        }, 1000);
+    }, 5000);
+}
 
 // ═══════════════════════════════════════
 // PAGE INITIALIZATION
