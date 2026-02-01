@@ -1618,6 +1618,10 @@ h3 {
    RESPONSIVE DESIGN
    ═══════════════════════════════════════ */
 @media (max-width: 768px) {
+  .hero-section {
+    padding: 90px 15px 50px;
+  }
+
   .section-card {
     padding: 30px 20px;
   }
@@ -1672,7 +1676,7 @@ h3 {
   }
 
   .hero-section {
-    padding: 40px 15px;
+    padding: 85px 15px 40px;
   }
 
   .invitation-frame {
